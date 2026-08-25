@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Kube Operations Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#EBEDE6;
+    --surface:#F7F8F3;
+    --surface-2:#DEE2D6;
+    --ink:#1C2129;
+    --ink-muted:#59636B;
+    --rule:#C7CBBE;
+    --slate:#3E5568;
+    --accent:#A9762F;
+    --accent-strong:#7C5420;
+    --fault:#9B4433;
+    --fault-bg:rgba(155,68,51,0.10);
+    --accent-bg:rgba(169,118,47,0.13);
+    --font-display:'Newsreader',Georgia,'Times New Roman',serif;
+    --font-sans:'IBM Plex Sans',-apple-system,'Segoe UI',sans-serif;
+    --font-mono:'IBM Plex Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#14171B;
+      --surface:#1B1F24;
+      --surface-2:#23282E;
+      --ink:#E7E6DE;
+      --ink-muted:#A0A6A6;
+      --rule:#333A41;
+      --slate:#7C97AC;
+      --accent:#D7A64B;
+      --accent-strong:#E9BB66;
+      --fault:#D98570;
+      --fault-bg:rgba(217,133,112,0.13);
+      --accent-bg:rgba(215,166,75,0.13);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14171B;
+    --surface:#1B1F24;
+    --surface-2:#23282E;
+    --ink:#E7E6DE;
+    --ink-muted:#A0A6A6;
+    --rule:#333A41;
+    --slate:#7C97AC;
+    --accent:#D7A64B;
+    --accent-strong:#E9BB66;
+    --fault:#D98570;
+    --fault-bg:rgba(217,133,112,0.13);
+    --accent-bg:rgba(215,166,75,0.13);
+  }
+
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-sans);}
+  .page{max-width:1080px;margin:0 auto;padding:56px 28px 90px;}
+
+  header.top{margin-bottom:40px;}
+  .kicker{font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--slate);margin-bottom:10px;}
+  h1{font-family:var(--font-display);font-size:clamp(30px,4.4vw,44px);font-weight:600;line-height:1.08;margin:0 0 16px;text-wrap:balance;}
+  .lede{font-size:16px;line-height:1.6;color:var(--ink);max-width:66ch;margin:0 0 8px;}
+  .lede + .lede{color:var(--ink-muted);}
+
+  .legend{display:flex;flex-wrap:wrap;gap:18px;margin-top:26px;padding:14px 18px;border:1px solid var(--rule);border-radius:10px;background:var(--surface);}
+  .legend-item{display:flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:11px;color:var(--ink-muted);}
+  .swatch{width:22px;height:12px;border-radius:3px;flex:none;}
+  .swatch.solid{border:1.5px solid var(--ink);background:var(--surface);}
+  .swatch.dashed{border:1.5px dashed var(--ink-muted);background:var(--surface);}
+  .swatch.fault{border:2px solid var(--fault);background:var(--fault-bg);}
+  .swatch.chip{border:1.5px solid var(--accent);background:var(--accent-bg);border-radius:7px;}
+
+  .lane{margin-top:64px;padding-top:40px;border-top:1px solid var(--rule);}
+  .lane-head{display:grid;grid-template-columns:auto 1fr;gap:18px 22px;align-items:start;margin-bottom:22px;}
+  .lane-num{font-family:var(--font-display);font-size:40px;font-weight:500;color:var(--slate);opacity:0.55;line-height:1;}
+  .lane h2{font-family:var(--font-display);font-size:26px;font-weight:600;margin:0 0 10px;}
+  .lane-intro{font-size:14.5px;line-height:1.65;color:var(--ink);max-width:70ch;margin:0;}
+  .lane-intro em{color:var(--ink-muted);font-style:italic;}
+
+  figure.diagram{margin:0 0 22px;}
+  .svg-wrap{overflow-x:auto;border:1px solid var(--rule);border-radius:12px;background:var(--surface);padding:10px;}
+  .svg-wrap svg{display:block;min-width:640px;width:100%;height:auto;}
+  figcaption{font-size:12.5px;color:var(--ink-muted);margin-top:10px;line-height:1.55;max-width:72ch;}
+
+  .node-box{fill:var(--surface);stroke:var(--ink);stroke-width:1.3;}
+  .node-box.dashed{stroke:var(--ink-muted);stroke-dasharray:5 4;}
+  .node-box.fault{stroke:var(--fault);stroke-width:2;fill:var(--fault-bg);}
+  .node-box.target{fill:var(--accent-bg);stroke:var(--accent);stroke-width:2;}
+  .node-label{font-family:var(--font-sans);font-size:12.5px;fill:var(--ink);text-anchor:middle;dominant-baseline:middle;}
+  .node-label.fault{fill:var(--fault);font-weight:600;}
+  .node-label.target{fill:var(--accent-strong);font-weight:700;font-size:14px;}
+  .chip-box{fill:var(--accent-bg);stroke:var(--accent);stroke-width:1.2;}
+  .chip-label{font-family:var(--font-mono);font-size:10.3px;font-weight:600;letter-spacing:0.02em;text-transform:uppercase;fill:var(--accent-strong);text-anchor:middle;dominant-baseline:middle;}
+  .flow-line{stroke:var(--ink-muted);stroke-width:1.4;fill:none;}
+  .lead-line{stroke:var(--ink-muted);stroke-width:1;stroke-dasharray:3 3;fill:none;opacity:0.75;}
+  .spine-line{stroke:var(--slate);stroke-width:1.6;fill:none;}
+  .row-label{font-family:var(--font-sans);font-size:11px;fill:var(--ink-muted);font-style:italic;}
+  .micro-note{font-family:var(--font-sans);font-size:10px;fill:var(--ink-muted);font-style:italic;text-anchor:middle;}
+  .spine-caption{font-family:var(--font-sans);font-size:11px;fill:var(--slate);font-weight:600;}
+  .annot-line{font-family:var(--font-sans);font-size:12px;fill:var(--ink-muted);}
+
+  .capstone .lane-num{color:var(--accent-strong);opacity:0.85;}
+
+  footer.foot{margin-top:70px;padding-top:24px;border-top:1px solid var(--rule);font-size:11.5px;color:var(--ink-muted);line-height:1.6;max-width:72ch;}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <header class="top">
+    <div class="kicker">AYD &middot; prepared for Haris &middot; Kube Publishing</div>
+    <h1>Kube operations map</h1>
+    <p class="lede">Our read of how Kube actually runs &mdash; where things flow, where they're manual, and where we could help.</p>
+    <p class="lede">Built from public research (Companies House, Trustpilot, LinkedIn, social media, and a few live checks) plus what's already come up in conversation.</p>
+
+    <div class="legend">
+      <div class="legend-item"><span class="swatch solid"></span>working / automated step</div>
+      <div class="legend-item"><span class="swatch dashed"></span>manual / bottlenecked step</div>
+      <div class="legend-item"><span class="swatch fault"></span>where you may need help</div>
+      <div class="legend-item"><span class="swatch chip"></span>where we could help</div>
+    </div>
+  </header>
+
+  <!-- LANE 1: CONTENT & EDITORIAL -->
+  <section class="lane" id="content-editorial">
+    <div class="lane-head">
+      <span class="lane-num">01</span>
+      <div>
+        <h2>Content &amp; editorial</h2>
+        <p class="lane-intro">A manuscript enters through Submittable and sits in a triage queue &mdash; currently a 6&ndash;9 month review window. We could help shrink that window and speed things up. Accepted titles go out to freelance editors and proofreaders per-title. Once published, some titles likely need translation for Kube's international Muslim audience &mdash; worth confirming &mdash; and the backlist builds up metadata and blurbs that need managing, refreshing, and tracking as an ongoing job.</p>
+      </div>
+    </div>
+    <figure class="diagram">
+      <div class="svg-wrap">
+        <svg viewBox="0 0 1040 232" role="img" aria-label="Manuscript intake flows through triage and freelance editing to publication, then branches into translation and backlist metadata maintenance; triage and metadata are flagged as AYD opportunities.">
+          <defs>
+            <marker id="arrow-l1" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M0,0 L8,4 L0,8 Z" fill="var(--ink-muted)"/>
+            </marker>
+          </defs>
+
+          <line class="flow-line" x1="190" y1="52" x2="228" y2="52" marker-end="url(#arrow-l1)"/>
+          <line class="flow-line" x1="400" y1="52" x2="438" y2="52" marker-end="url(#arrow-l1)"/>
+          <line class="flow-line" x1="630" y1="52" x2="668" y2="52" marker-end="url(#arrow-l1)"/>
+          <path class="flow-line" d="M755,76 L645,136" marker-end="url(#arrow-l1)"/>
+          <path class="flow-line" d="M755,76 L905,136" marker-end="url(#arrow-l1)"/>
+          <line class="lead-line" x1="315" y1="76" x2="315" y2="196"/>
+          <line class="lead-line" x1="905" y1="186" x2="925" y2="196"/>
+
+          <rect class="node-box" x="20" y="28" width="170" height="48" rx="8"/>
+          <text class="node-label" x="105" y="53">Manuscript in</text>
+
+          <rect class="node-box dashed" x="230" y="28" width="170" height="48" rx="8"/>
+          <text class="node-label" x="315" y="47">Triage</text>
+          <text class="node-label" x="315" y="63" font-size="10">6&ndash;9 month queue</text>
+
+          <rect class="node-box dashed" x="440" y="28" width="190" height="48" rx="8"/>
+          <text class="node-label" x="535" y="53">Edit &amp; proofread</text>
+
+          <rect class="node-box" x="670" y="28" width="170" height="48" rx="8"/>
+          <text class="node-label" x="755" y="53">Published</text>
+
+          <rect class="node-box dashed" x="560" y="138" width="170" height="48" rx="8"/>
+          <text class="node-label" x="645" y="163">Translation</text>
+
+          <rect class="node-box dashed" x="790" y="138" width="230" height="48" rx="8"/>
+          <text class="node-label" x="905" y="163">Backlist metadata</text>
+
+          <rect class="chip-box" x="230" y="196" width="170" height="34" rx="14"/>
+          <text class="chip-label" x="315" y="214">Triage assist</text>
+
+          <rect class="chip-box" x="830" y="196" width="190" height="34" rx="14"/>
+          <text class="chip-label" x="925" y="214">Metadata refresh</text>
+        </svg>
+      </div>
+      <figcaption>Triage and freelance editing are the two manual bottlenecks in the core pipeline; translation and backlist metadata are ongoing side-processes off the back of every published title. Metadata refresh is a good place to start &mdash; it touches no live process and has an obvious before/after.</figcaption>
+    </figure>
+  </section>
+
+  <!-- LANE 2: DISCOVERY & MARKETING -->
+  <section class="lane" id="discovery-marketing">
+    <div class="lane-head">
+      <span class="lane-num">02</span>
+      <div>
+        <h2>Discovery &amp; marketing <span style="font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--accent-strong);text-transform:uppercase;letter-spacing:0.04em;">&mdash; what you asked about</span></h2>
+        <p class="lane-intro">A title's discoverability starts at the retailer listing, then depends on the marketing that runs from there &mdash; social media, an email list, and paid ads. This is something we can look at immediately, in two ways. First, understanding where things stand today: which channels are generating revenue, and which ones aren't performing as well. Second, customer segmentation across those channels &mdash; some customers respond better to email, others to social &mdash; moving toward a joined-up, omni-channel view. Both need data analytics to see where you are now before deciding where to focus next.</p>
+      </div>
+    </div>
+    <figure class="diagram">
+      <div class="svg-wrap">
+        <svg viewBox="0 0 1400 236" role="img" aria-label="A title is listed then pushed through marketing, with personalization and SEO handled implicitly; the marketing push node carries the channel dashboard, A/B testing, scheduled content, and customer segmentation opportunities.">
+          <defs>
+            <marker id="arrow-l2" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M0,0 L8,4 L0,8 Z" fill="var(--ink-muted)"/>
+            </marker>
+          </defs>
+
+          <line class="flow-line" x1="180" y1="52" x2="208" y2="52" marker-end="url(#arrow-l2)"/>
+          <line class="flow-line" x1="400" y1="52" x2="428" y2="52" marker-end="url(#arrow-l2)"/>
+          <path class="flow-line" d="M100,76 L110,136" marker-end="url(#arrow-l2)"/>
+          <path class="flow-line" d="M305,76 L330,136" marker-end="url(#arrow-l2)"/>
+
+          <path class="lead-line" d="M305,76 L575,196"/>
+          <path class="lead-line" d="M305,76 L805,196"/>
+          <path class="lead-line" d="M305,76 L1025,196"/>
+          <path class="lead-line" d="M305,76 L1260,196"/>
+          <line class="lead-line" x1="110" y1="186" x2="110" y2="196"/>
+
+          <rect class="node-box" x="20" y="28" width="160" height="48" rx="8"/>
+          <text class="node-label" x="100" y="53">Listed</text>
+
+          <rect class="node-box dashed" x="210" y="28" width="190" height="48" rx="8"/>
+          <text class="node-label" x="305" y="53">Marketing push</text>
+
+          <rect class="node-box" x="430" y="28" width="180" height="48" rx="8"/>
+          <text class="node-label" x="520" y="53">Reader reached</text>
+
+          <rect class="node-box dashed" x="20" y="138" width="180" height="48" rx="8"/>
+          <text class="node-label" x="110" y="163">SEO optimization</text>
+
+          <rect class="node-box dashed" x="240" y="138" width="180" height="48" rx="8"/>
+          <text class="node-label" x="330" y="163">Personalization</text>
+
+          <rect class="chip-box" x="20" y="196" width="180" height="34" rx="14"/>
+          <text class="chip-label" x="110" y="214">Backlist SEO</text>
+
+          <rect class="chip-box" x="460" y="196" width="230" height="34" rx="14"/>
+          <text class="chip-label" x="575" y="214">Channel dashboard &middot; live</text>
+
+          <rect class="chip-box" x="710" y="196" width="190" height="34" rx="14"/>
+          <text class="chip-label" x="805" y="214">A/B test listings</text>
+
+          <rect class="chip-box" x="920" y="196" width="210" height="34" rx="14"/>
+          <text class="chip-label" x="1025" y="214">Scheduled content</text>
+
+          <rect class="chip-box" x="1150" y="196" width="220" height="34" rx="14"/>
+          <text class="chip-label" x="1260" y="214">Customer segmentation</text>
+        </svg>
+      </div>
+      <figcaption>Opportunities come from the marketing-push step: a channel scorecard to help you understand where your social media stands today, A/B testing across listings (cover / blurb / keywords) to see what actually moves each channel, and from there, moving toward automation &mdash; a scheduled posting cadence and customer segmentation, grouping who responds to email versus social, as a step toward a joined-up, omni-channel view.</figcaption>
+    </figure>
+  </section>
+
+  <!-- LANE 3: OPERATIONS & SUPPLY CHAIN -->
+  <section class="lane" id="operations">
+    <div class="lane-head">
+      <span class="lane-num">03</span>
+      <div>
+        <h2>Operations &amp; supply chain</h2>
+        <p class="lane-intro">Four back-office functions run behind every sale and every title. Print-run sizing is likely a forecasting decision based on experience and past cycles &mdash; worth confirming. Rights and licensing may sit in spreadsheets across imprints and territories. Royalty calculation likely means reconciling statements from multiple retailers by hand. Customer service is handled well by people, which Trustpilot reflects, currently through a phone line restricted to couriers and five separate function-based email inboxes.</p>
+        <p class="lane-intro" style="margin-top:12px;">Here's how we could help: filling the gaps between the tools you already use, automating manual steps where they exist, replacing spreadsheets with dashboards for a clearer view, and improving traceability across all four.</p>
+      </div>
+    </div>
+    <figure class="diagram">
+      <div class="svg-wrap">
+        <svg viewBox="0 0 980 240" role="img" aria-label="Four parallel back-office functions hang off a shared operations spine: print-run sizing, rights tracking, royalty calculation, and customer service, each manual and each carrying its own AYD opportunity.">
+          <defs>
+            <marker id="arrow-l3" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M0,0 L8,4 L0,8 Z" fill="var(--slate)"/>
+            </marker>
+          </defs>
+
+          <text class="spine-caption" x="20" y="16">Every sale / every title</text>
+          <line class="spine-line" x1="20" y1="40" x2="960" y2="40"/>
+          <line class="flow-line" x1="115" y1="40" x2="115" y2="86" marker-end="url(#arrow-l3)"/>
+          <line class="flow-line" x1="345" y1="40" x2="345" y2="86" marker-end="url(#arrow-l3)"/>
+          <line class="flow-line" x1="575" y1="40" x2="575" y2="86" marker-end="url(#arrow-l3)"/>
+          <line class="flow-line" x1="825" y1="40" x2="825" y2="86" marker-end="url(#arrow-l3)"/>
+
+          <line class="lead-line" x1="115" y1="138" x2="115" y2="200"/>
+          <line class="lead-line" x1="575" y1="138" x2="575" y2="200"/>
+          <line class="lead-line" x1="825" y1="138" x2="825" y2="200"/>
+
+          <rect class="node-box dashed" x="20" y="90" width="190" height="48" rx="8"/>
+          <text class="node-label" x="115" y="115">Print-run sizing</text>
+
+          <rect class="node-box dashed" x="250" y="90" width="190" height="48" rx="8"/>
+          <text class="node-label" x="345" y="115">Rights tracking</text>
+
+          <rect class="node-box dashed" x="480" y="90" width="190" height="48" rx="8"/>
+          <text class="node-label" x="575" y="115">Royalty calc</text>
+
+          <rect class="node-box dashed" x="710" y="90" width="230" height="48" rx="8"/>
+          <text class="node-label" x="825" y="115">Customer service</text>
+
+          <rect class="chip-box" x="20" y="200" width="190" height="34" rx="14"/>
+          <text class="chip-label" x="115" y="218">Demand forecasting</text>
+
+          <rect class="chip-box" x="480" y="200" width="190" height="34" rx="14"/>
+          <text class="chip-label" x="575" y="218">Royalty automation</text>
+
+          <rect class="chip-box" x="710" y="200" width="230" height="34" rx="14"/>
+          <text class="chip-label" x="825" y="218">Auto first-response &middot; see below</text>
+        </svg>
+      </div>
+      <figcaption>Rights tracking isn't shown with a proposed fix here &mdash; it's a likely pain point worth discussing, not yet something we've scoped. Customer service gets a full breakdown below, since &ldquo;fix the phone/CRM situation&rdquo; is really three separate fragmented channels, not one box.</figcaption>
+    </figure>
+
+    <h3 style="font-family:var(--font-display);font-size:17px;font-weight:600;margin:8px 0 12px;">Customer service, zoomed in &mdash; the operation and the proposed solution</h3>
+    <figure class="diagram">
+      <div class="svg-wrap">
+        <svg viewBox="0 0 690 270" role="img" aria-label="Three fragmented contact channels — phone restricted to couriers (likely already backed by a 3CX call system), five separate email inboxes, and DM-only social — feed into a gap where none of it is logged anywhere shared. A call and contact logging layer on top of the existing setup is proposed as the fix.">
+          <defs>
+            <marker id="arrow-l3b" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M0,0 L8,4 L0,8 Z" fill="var(--ink-muted)"/>
+            </marker>
+            <marker id="arrow-l3c" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M0,0 L8,4 L0,8 Z" fill="var(--accent)"/>
+            </marker>
+          </defs>
+
+          <path class="flow-line" d="M125,64 L280,112" marker-end="url(#arrow-l3b)"/>
+          <line class="flow-line" x1="345" y1="64" x2="345" y2="112" marker-end="url(#arrow-l3b)"/>
+          <path class="flow-line" d="M565,64 L430,112" marker-end="url(#arrow-l3b)"/>
+          <line class="flow-line" x1="365" y1="156" x2="365" y2="192" stroke="var(--accent)" marker-end="url(#arrow-l3c)"/>
+
+          <rect class="node-box dashed" x="20" y="20" width="210" height="44" rx="8"/>
+          <text class="node-label" x="125" y="43">Phone &mdash; couriers only</text>
+          <text class="row-label" x="125" y="80" text-anchor="middle">3CX found on trade domain &mdash;</text>
+          <text class="row-label" x="125" y="93" text-anchor="middle">likely already has call capability</text>
+
+          <rect class="node-box dashed" x="250" y="20" width="190" height="44" rx="8"/>
+          <text class="node-label" x="345" y="43">5 email inboxes</text>
+
+          <rect class="node-box dashed" x="460" y="20" width="210" height="44" rx="8"/>
+          <text class="node-label" x="565" y="43">No live chat &mdash; DM only</text>
+
+          <rect class="node-box dashed" x="250" y="112" width="230" height="44" rx="8"/>
+          <text class="node-label" x="365" y="135">None of it is logged anywhere</text>
+
+          <rect class="node-box target" x="250" y="192" width="230" height="52" rx="10"/>
+          <text class="node-label target" x="365" y="212" font-size="13">Call + contact logging</text>
+          <text class="node-label target" x="365" y="229" font-size="10" font-weight="500">on top of your existing setup</text>
+        </svg>
+      </div>
+      <figcaption>Segmented inboxes by function (general / marketing / distribution / rights / submissions) aren't a problem on their own. We noticed a 3CX (phone system) login while researching your trade site, which suggests calling capability may already exist or be underway on your side &mdash; if so, this isn't about getting you a phone system, it's about a CRM that captures those calls, the five inboxes, and social DMs in one shared view instead of three separate silos. Happy to compare notes on where that actually stands.</figcaption>
+    </figure>
+  </section>
+
+  <!-- LANE 4: SALES & DISTRIBUTION -->
+  <section class="lane" id="sales-distribution">
+    <div class="lane-head">
+      <span class="lane-num">04</span>
+      <div>
+        <h2>Sales &amp; distribution</h2>
+        <p class="lane-intro">Two separate flows run in opposite directions. As <strong>distributor</strong>, Kube takes on partner publishers' catalogues (Ali Gator, Darussalam, Ta-Ha, IIIT) and sells them outward through its own network into 30&ndash;40+ countries, taking a commission. As <strong>wholesaler</strong>, it runs the reverse: buying bulk stock from mainstream publishers &mdash; who typically won't open small accounts directly &mdash; and breaking it down into smaller wholesale orders that independent Muslim bookshops can actually place, through kubepublishingtrade.com. Right now that ordering happens by email instead of through the site, and this is somewhere we could help: managing and automating that process, and increasing visibility with dashboards and a unified view &mdash; the same kind of CRM approach as the contact-logging piece above.</p>
+      </div>
+    </div>
+    <figure class="diagram">
+      <div class="svg-wrap">
+        <svg viewBox="0 0 1060 296" role="img" aria-label="Two flows: the distributor flow sells partner publishers' books outward through Kube's network; the wholesaler flow buys mainstream stock and routes it to small bookshops through a trade site currently returning a 404, with orders going by manual email instead.">
+          <defs>
+            <marker id="arrow-l4" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M0,0 L8,4 L0,8 Z" fill="var(--ink-muted)"/>
+            </marker>
+          </defs>
+
+          <text class="row-label" x="20" y="14">Distributor flow &mdash; partner publishers' books, outward</text>
+          <line class="flow-line" x1="200" y1="42" x2="228" y2="42" marker-end="url(#arrow-l4)"/>
+          <line class="flow-line" x1="430" y1="42" x2="458" y2="42" marker-end="url(#arrow-l4)"/>
+          <line class="flow-line" x1="640" y1="42" x2="668" y2="42" marker-end="url(#arrow-l4)"/>
+
+          <rect class="node-box" x="20" y="20" width="180" height="44" rx="8"/>
+          <text class="node-label" x="110" y="43">Partner publisher</text>
+
+          <rect class="node-box" x="230" y="20" width="200" height="44" rx="8"/>
+          <text class="node-label" x="330" y="43">Kube takes catalogue</text>
+
+          <rect class="node-box" x="460" y="20" width="180" height="44" rx="8"/>
+          <text class="node-label" x="550" y="43">Sold into network</text>
+
+          <rect class="node-box" x="670" y="20" width="170" height="44" rx="8"/>
+          <text class="node-label" x="755" y="43">Commission back</text>
+
+          <text class="row-label" x="20" y="128">Wholesaler flow &mdash; mainstream stock, inward to small bookshops</text>
+          <line class="flow-line" x1="220" y1="162" x2="248" y2="162" marker-end="url(#arrow-l4)"/>
+          <line class="flow-line" x1="440" y1="162" x2="468" y2="162" marker-end="url(#arrow-l4)"/>
+          <line class="flow-line" x1="650" y1="162" x2="678" y2="162" marker-end="url(#arrow-l4)"/>
+          <line class="flow-line" x1="890" y1="162" x2="918" y2="162" marker-end="url(#arrow-l4)"/>
+          <text class="micro-note" x="665" y="152">currently, since 25 Aug 2026</text>
+
+          <rect class="node-box" x="20" y="140" width="200" height="44" rx="8"/>
+          <text class="node-label" x="120" y="163">Mainstream publisher</text>
+
+          <rect class="node-box" x="250" y="140" width="170" height="44" rx="8"/>
+          <text class="node-label" x="335" y="163">Kube buys stock</text>
+
+          <rect class="node-box fault" x="450" y="140" width="150" height="44" rx="8"/>
+          <text class="node-label fault" x="525" y="157">Trade site</text>
+          <text class="node-label fault" x="525" y="171" font-size="9">404</text>
+
+          <rect class="node-box dashed" x="630" y="140" width="200" height="44" rx="8"/>
+          <text class="node-label" x="730" y="163">Manual email order</text>
+
+          <rect class="node-box" x="850" y="140" width="190" height="44" rx="8"/>
+          <text class="node-label" x="945" y="163">Small bookshops</text>
+
+          <line class="lead-line" x1="525" y1="184" x2="545" y2="250"/>
+          <line class="lead-line" x1="945" y1="184" x2="935" y2="250"/>
+
+          <rect class="chip-box" x="440" y="250" width="210" height="34" rx="14"/>
+          <text class="chip-label" x="545" y="268">Trade-site rebuild</text>
+
+          <rect class="chip-box" x="830" y="250" width="210" height="34" rx="14"/>
+          <text class="chip-label" x="935" y="268">Return-rate prediction</text>
+        </svg>
+      </div>
+      <figcaption>The trade site is where bulk stock gets broken into smaller wholesale orders a small bookshop can place. Right now it's returning a 404, so orders are going by manual email instead &mdash; this is where we could help, building a proper self-serve replacement for the mechanism your whole wholesale channel runs through.</figcaption>
+    </figure>
+  </section>
+
+  <!-- LANE 5: NRM-LITE -->
+  <section class="lane" id="nrm-lite">
+    <div class="lane-head">
+      <span class="lane-num">05</span>
+      <div>
+        <h2>Net Revenue Management &mdash; lite</h2>
+        <p class="lane-intro">We could use Nielsen BookScan data, where available, to help build a clearer revenue strategy from your own data and where the market's heading &mdash; it's a paid, enterprise-priced dataset, so this depends on access. Your existing marketing company has referenced Nielsen &mdash; let us know if that access already covers this, so we're not duplicating what you already have.</p>
+        <p class="lane-intro" style="margin-top:12px;">What's buildable without Nielsen is a directional, not exact, version, built from four pieces below &mdash; each from free or already-owned data. We could also help with customer journey mapping, customer behaviour analysis, and omni-channel work, so customers get a consistent experience across every channel.</p>
+        <p class="lane-intro" style="margin-top:12px;"><strong>Channel mix, in plain terms:</strong> the breakdown of where sales actually come from &mdash; what percentage sells through each channel, rather than treating &ldquo;sales&rdquo; as one number. For Kube that'd be something like: X% through kubepublishing.com direct, Y% through Amazon, Z% through the wholesale/trade channel to bookshops, W% through other distributors. It matters because it changes priorities: if most sales run through Amazon, SEO/listing work there matters more than polishing Kube's own site; if wholesale is bigger than it looks, the trade-site fix (section 04) matters even more than the marketing-channel audit does. It's the one NRM-lite piece that's free <em>and</em> already owned &mdash; just Kube's own sales records, nothing to scrape or buy.</p>
+        <p class="lane-intro" style="margin-top:12px;"><strong>Price-pack, sharpened:</strong> two checks per title &mdash; whether it's offered in every format that makes sense for it, and whether the price spread across those formats makes sense (a paperback priced too close to the hardback discourages the higher-margin option instead of protecting it).</p>
+      </div>
+    </div>
+    <figure class="diagram">
+      <div class="svg-wrap">
+        <svg viewBox="0 0 1060 300" role="img" aria-label="Four free or already-owned data sources — competitor pricing, Amazon rank and Goodreads, promo-driven rank movement, and Kube's own channel mix — combine into a directional NRM-lite view. Nielsen BookScan is shown separately as excluded: paid, not used here.">
+          <defs>
+            <marker id="arrow-l6" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M0,0 L8,4 L0,8 Z" fill="var(--ink-muted)"/>
+            </marker>
+          </defs>
+
+          <path class="flow-line" d="M135,80 L340,170" marker-end="url(#arrow-l6)"/>
+          <path class="flow-line" d="M380,80 L470,170" marker-end="url(#arrow-l6)"/>
+          <path class="flow-line" d="M630,80 L590,170" marker-end="url(#arrow-l6)"/>
+          <path class="flow-line" d="M865,80 L720,170" marker-end="url(#arrow-l6)"/>
+
+          <rect class="node-box dashed" x="20" y="20" width="230" height="60" rx="8"/>
+          <text class="node-label" x="135" y="42">Price-pack architecture</text>
+          <text class="node-label" x="135" y="60" font-size="10" fill="var(--ink-muted)">manual competitor pricing</text>
+
+          <rect class="node-box dashed" x="270" y="20" width="220" height="60" rx="8"/>
+          <text class="node-label" x="380" y="42">Market positioning</text>
+          <text class="node-label" x="380" y="60" font-size="10" fill="var(--ink-muted)">Amazon rank + Goodreads</text>
+
+          <rect class="node-box dashed" x="510" y="20" width="240" height="60" rx="8"/>
+          <text class="node-label" x="630" y="42">Promotional effectiveness</text>
+          <text class="node-label" x="630" y="60" font-size="10" fill="var(--ink-muted)">rank + social movement</text>
+
+          <rect class="node-box dashed" x="770" y="20" width="190" height="60" rx="8"/>
+          <text class="node-label" x="865" y="42">Channel mix</text>
+          <text class="node-label" x="865" y="60" font-size="10" fill="var(--ink-muted)">Kube's own data &middot; free</text>
+
+          <rect class="node-box target" x="280" y="170" width="500" height="60" rx="10"/>
+          <text class="node-label target" x="530" y="194">NRM-lite view</text>
+          <text class="node-label target" x="530" y="212" font-size="10.5" font-weight="500">directional, not exact &mdash; no Nielsen</text>
+
+          <rect class="node-box dashed" x="810" y="170" width="230" height="60" rx="8"/>
+          <text class="node-label" x="925" y="194" text-decoration="line-through" opacity="0.65">Nielsen BookScan</text>
+          <text class="node-label" x="925" y="211" font-size="10" fill="var(--ink-muted)">paid &mdash; not used here</text>
+
+          <text class="annot-line" x="30" y="260">Can't replicate without paid data: exact unit sales, true category-wide market share, full cross-retailer intelligence.</text>
+          <text class="annot-line" x="30" y="278">For a publisher this size, the lite version is often more actionable than the enterprise dataset would be anyway.</text>
+        </svg>
+      </div>
+      <figcaption>Channel mix (your own direct-vs-retailer sales split) is the single most valuable piece here, and it's free &mdash; it's data you already have.</figcaption>
+    </figure>
+  </section>
+
+  <!-- LANE 6: FINANCIAL & STRATEGIC / CAPSTONE -->
+  <section class="lane capstone" id="unified-view">
+    <div class="lane-head">
+      <span class="lane-num">06</span>
+      <div>
+        <h2>Financial &amp; strategic &mdash; the unified view</h2>
+        <p class="lane-intro">Publishing margins are thin industry-wide, so gaps like these tend to compound rather than sit as isolated line items &mdash; for example, a slow slush pile delaying revenue, a print-run forecast that ties up cash, or manual royalty reconciliation burning hours that could go to acquisitions. Right now, sales data sits siloed across Amazon, distributors, your own site, Trustpilot, and social. We could help build a single view that helps you understand the root cause of any inefficiencies, or any areas that are draining income or creating cost without a clear return.</p>
+        <p class="lane-intro" style="margin-top:12px;"><strong>Cost &amp; tooling efficiency, worth flagging separately:</strong> every business carries a mix of monthly and one-off tool/subscription costs, and the ones not returning real value are easy to lose track of. In a thin-margin business, the highest-leverage move isn't only growing revenue &mdash; it's making sure a soft patch in revenue doesn't also mean bleeding cash on subscriptions and tools that aren't earning their keep. A straightforward audit (what's actually being paid for, monthly vs. one-off, what's actually used) usually pays for itself quickly &mdash; showing you what's working well versus what isn't, so you can decide where to focus, especially on the areas that aren't.</p>
+      </div>
+    </div>
+    <figure class="diagram">
+      <div class="svg-wrap">
+        <svg viewBox="0 0 1060 250" role="img" aria-label="The four operational areas above all feed into one proposed consolidated view, addressing the underlying data fragmentation across Amazon, distributors, Kube's own site, Trustpilot, and social.">
+          <defs>
+            <marker id="arrow-l5" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M0,0 L8,4 L0,8 Z" fill="var(--ink-muted)"/>
+            </marker>
+          </defs>
+
+          <path class="flow-line" d="M130,64 L340,138" marker-end="url(#arrow-l5)"/>
+          <path class="flow-line" d="M400,64 L470,138" marker-end="url(#arrow-l5)"/>
+          <path class="flow-line" d="M660,64 L650,138" marker-end="url(#arrow-l5)"/>
+          <path class="flow-line" d="M920,64 L780,138" marker-end="url(#arrow-l5)"/>
+
+          <rect class="node-box" x="20" y="20" width="220" height="44" rx="8"/>
+          <text class="node-label" x="130" y="43">Content &amp; editorial</text>
+
+          <rect class="node-box" x="280" y="20" width="240" height="44" rx="8"/>
+          <text class="node-label" x="400" y="43">Discovery &amp; marketing</text>
+
+          <rect class="node-box" x="560" y="20" width="200" height="44" rx="8"/>
+          <text class="node-label" x="660" y="43">Operations</text>
+
+          <rect class="node-box" x="800" y="20" width="240" height="44" rx="8"/>
+          <text class="node-label" x="920" y="43">Sales &amp; distribution</text>
+
+          <rect class="node-box target" x="280" y="140" width="560" height="60" rx="10"/>
+          <text class="node-label target" x="560" y="164">Consolidated view</text>
+          <text class="node-label target" x="560" y="182" font-size="10.5" font-weight="500">proposed</text>
+
+          <text class="annot-line" x="30" y="230">Data siloed across Amazon, distributors, own site, Trustpilot, social.</text>
+          <text class="annot-line" x="30" y="246">Thin margins mean every gap above compounds &mdash; this is the umbrella offer underneath every point-fix.</text>
+        </svg>
+      </div>
+      <figcaption>This is the bigger picture underneath everything above &mdash; worth keeping in view even if we start smaller with one piece of it first.</figcaption>
+    </figure>
+  </section>
+
+  <footer class="foot">
+    Compiled 2026-08-25 from public research (Companies House, Trustpilot, LinkedIn, ZoomInfo, direct site checks) plus what's already come up in conversation. Section 02 (discovery &amp; marketing) and the trade-site finding in section 04 are independently verified; the rest maps out what we think is likely true of a publisher this shape &mdash; flagged clearly as a working hypothesis, not a diagnosis. We'd rather test it with you than assume it.
+  </footer>
+
+</div>
+
+</body>
+</html>
