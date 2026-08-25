@@ -83,8 +83,12 @@
   .lane-intro em{color:var(--ink-muted);font-style:italic;}
 
   figure.diagram{margin:0 0 22px;}
+  .scroll-hint{display:none;font-family:var(--font-mono);font-size:10px;letter-spacing:0.05em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:6px;}
   .svg-wrap{overflow-x:auto;border:1px solid var(--rule);border-radius:12px;background:var(--surface);padding:10px;}
   .svg-wrap svg{display:block;min-width:640px;width:100%;height:auto;}
+  @media (max-width:700px){
+    .scroll-hint{display:block;}
+  }
   figcaption{font-size:12.5px;color:var(--ink-muted);margin-top:10px;line-height:1.55;max-width:72ch;}
 
   .node-box{fill:var(--surface);stroke:var(--ink);stroke-width:1.3;}
@@ -137,6 +141,7 @@
       </div>
     </div>
     <figure class="diagram">
+      <div class="scroll-hint">Scroll to see the full diagram &rarr;</div>
       <div class="svg-wrap">
         <svg viewBox="0 0 1040 232" role="img" aria-label="Manuscript intake flows through triage and freelance editing to publication, then branches into translation and backlist metadata maintenance; triage and metadata are flagged as AYD opportunities.">
           <defs>
@@ -193,6 +198,7 @@
       </div>
     </div>
     <figure class="diagram">
+      <div class="scroll-hint">Scroll to see the full diagram &rarr;</div>
       <div class="svg-wrap">
         <svg viewBox="0 0 1400 236" role="img" aria-label="A title is listed then pushed through marketing, with personalization and SEO handled implicitly; the marketing push node carries the channel dashboard, A/B testing, scheduled content, and customer segmentation opportunities.">
           <defs>
@@ -258,6 +264,7 @@
       </div>
     </div>
     <figure class="diagram">
+      <div class="scroll-hint">Scroll to see the full diagram &rarr;</div>
       <div class="svg-wrap">
         <svg viewBox="0 0 980 240" role="img" aria-label="Four parallel back-office functions hang off a shared operations spine: print-run sizing, rights tracking, royalty calculation, and customer service, each manual and each carrying its own AYD opportunity.">
           <defs>
@@ -304,6 +311,7 @@
 
     <h3 style="font-family:var(--font-display);font-size:17px;font-weight:600;margin:8px 0 12px;">Customer service, zoomed in &mdash; the operation and the proposed solution</h3>
     <figure class="diagram">
+      <div class="scroll-hint">Scroll to see the full diagram &rarr;</div>
       <div class="svg-wrap">
         <svg viewBox="0 0 690 270" role="img" aria-label="Three fragmented contact channels — phone restricted to couriers (likely already backed by a 3CX call system), five separate email inboxes, and DM-only social — feed into a gap where none of it is logged anywhere shared. A call and contact logging layer on top of the existing setup is proposed as the fix.">
           <defs>
@@ -353,6 +361,7 @@
       </div>
     </div>
     <figure class="diagram">
+      <div class="scroll-hint">Scroll to see the full diagram &rarr;</div>
       <div class="svg-wrap">
         <svg viewBox="0 0 1060 296" role="img" aria-label="Two flows: the distributor flow sells partner publishers' books outward through Kube's network; the wholesaler flow buys mainstream stock and routes it to small bookshops through a trade site currently returning a 404, with orders going by manual email instead.">
           <defs>
@@ -428,6 +437,7 @@
       </div>
     </div>
     <figure class="diagram">
+      <div class="scroll-hint">Scroll to see the full diagram &rarr;</div>
       <div class="svg-wrap">
         <svg viewBox="0 0 1060 300" role="img" aria-label="Four free or already-owned data sources — competitor pricing, Amazon rank and Goodreads, promo-driven rank movement, and Kube's own channel mix — combine into a directional NRM-lite view. Nielsen BookScan is shown separately as excluded: paid, not used here.">
           <defs>
@@ -484,6 +494,7 @@
       </div>
     </div>
     <figure class="diagram">
+      <div class="scroll-hint">Scroll to see the full diagram &rarr;</div>
       <div class="svg-wrap">
         <svg viewBox="0 0 1060 250" role="img" aria-label="The four operational areas above all feed into one proposed consolidated view, addressing the underlying data fragmentation across Amazon, distributors, Kube's own site, Trustpilot, and social.">
           <defs>
